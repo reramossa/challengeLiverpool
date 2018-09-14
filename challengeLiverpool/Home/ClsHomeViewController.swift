@@ -28,6 +28,9 @@ class ClsHomeViewController: UIViewController, UITextFieldDelegate, UITableViewD
     var paLstProductos = [ClsProductoDTO]()
     var poProducto:ClsProductoDTO?
     var poBtnHistorial: UIButton?
+    var container: UIView = UIView()
+    var loadingView: UIView = UIView()
+    var activityIndicator: UIActivityIndicatorView = UIActivityIndicatorView()
     
     
     override func viewDidLoad() {
@@ -71,26 +74,7 @@ class ClsHomeViewController: UIViewController, UITextFieldDelegate, UITableViewD
         self.view.addSubview(poSearch!)
         
         
-        //boton registrar ---------------------------------
-        poBtnHistorial = UIButton(frame: CGRect(x: (loWidth/2),
-                                            y: 120,
-                                            width: ((loWidth/2)-20),
-                                            height: 40))
-        poBtnHistorial?.setTitle("Busquedas recientes", for: .normal)
-        poBtnHistorial?.titleLabel?.font = loFont
-        poBtnHistorial?.layer.borderWidth = CGFloat (0.6)
-        poBtnHistorial?.layer.borderColor = UIColor.darkGray.cgColor
-        poBtnHistorial?.backgroundColor = UIColor(red: 255/255, green: 0/255, blue: 152/255, alpha: 1)
-        poBtnHistorial?.addTarget(self, action:#selector(self.actionNueva(_:)), for: .touchUpInside)
-        poBtnHistorial?.layer.cornerRadius = 20.0
-        poBtnHistorial?.layer.masksToBounds = true
-        self.view.addSubview(poBtnHistorial!)
-        
-        
-        
-        
-        
-        poTable.frame = CGRect(x: 0, y: (0.22 * loHeigth), width: loWidth, height: (loHeigth-(0.2 * loHeigth)))
+        poTable.frame = CGRect(x: 0, y: 110, width: loWidth, height: (loHeigth - 110))
         //tableView.style = UITableViewStyle.
         poTable.register(ClsCellProductos.self, forCellReuseIdentifier: "Cell")
         poTable.allowsSelection = false
@@ -100,83 +84,83 @@ class ClsHomeViewController: UIViewController, UITextFieldDelegate, UITableViewD
         view.addSubview(poTable)
     }
     
-    
-    @IBAction func actionNueva(_ sender: UIButton) {
-        
-        let loHistorialView: UIView = UIView(frame: CGRect(x: 0,
-                                                         y: (0.10 * loHeigth),
-                                                         width: loWidth,
-                                                         height: (0.80 * loHeigth)))
-        loHistorialView.backgroundColor = .white
-        //loCanjearView.alpha = 0.5
-        loHistorialView.tag = 100
-        loHistorialView.isUserInteractionEnabled = true
-        self.view.addSubview(loHistorialView)
-        
-        //Question
-        poLabel = UILabel(frame: CGRect(x: 0,
-                                        y: 0,
-                                        width: loWidth,
-                                        height: (0.07 * loHeigth)))
-        poLabel?.textAlignment = NSTextAlignment.center
-        poLabel?.textColor = UIColor.black
-        poLabel?.text = "Busquedas recientes"
-        poLabel?.adjustsFontSizeToFitWidth = true
-        poLabel?.font = loFont2
-        //poLabel?.backgroundColor = UIColor(red: 244/255, green: 0/255, blue: 0/255, alpha: 1)
-        loHistorialView.addSubview(poLabel!)
-        
-        
-        
-        if(UserDefaults.standard.object(forKey: "lstHistorial") == nil ){
+    @IBAction func actionHistorial(_ sender: Any) {
+        if !(self.view.viewWithTag(100) != nil) {
             
+            
+            let loHistorialView: UIView = UIView(frame: CGRect(x: 0,
+                                                               y: (0.10 * loHeigth),
+                                                               width: loWidth,
+                                                               height: (0.90 * loHeigth)))
+            loHistorialView.backgroundColor = .white
+            //loCanjearView.alpha = 0.5
+            loHistorialView.tag = 100
+            loHistorialView.isUserInteractionEnabled = true
+            self.view.addSubview(loHistorialView)
+            
+            //Question
             poLabel = UILabel(frame: CGRect(x: 0,
                                             y: 0,
                                             width: loWidth,
-                                            height: (0.14 * loHeigth)))
+                                            height: (0.07 * loHeigth)))
             poLabel?.textAlignment = NSTextAlignment.center
             poLabel?.textColor = UIColor.black
-            poLabel?.text = "No existen"
+            poLabel?.text = "Busquedas recientes"
             poLabel?.adjustsFontSizeToFitWidth = true
-            poLabel?.font = loFont
+            poLabel?.font = loFont2
             loHistorialView.addSubview(poLabel!)
-        }else{
-            let lstHistorial = UserDefaults.standard.object(forKey: "lstHistorial") as! [String]
-            for  i in 0 ..< lstHistorial.count{
-                let lodetalle = lstHistorial[i] as! String
+            
+            
+            
+            if(UserDefaults.standard.object(forKey: "lstHistorial") == nil ){
                 
-                poLabel = UILabel(frame: CGRect(x: 20,
-                                                y: 80,
+                poLabel = UILabel(frame: CGRect(x: 0,
+                                                y: 0,
                                                 width: loWidth,
-                                                height: (0.4 * loHeigth) * Double(i)/6))
-                poLabel?.textAlignment = NSTextAlignment.left
+                                                height: (0.14 * loHeigth)))
+                poLabel?.textAlignment = NSTextAlignment.center
                 poLabel?.textColor = UIColor.black
-                poLabel?.text = "- \(lodetalle)"
+                poLabel?.text = "No existen"
                 poLabel?.adjustsFontSizeToFitWidth = true
                 poLabel?.font = loFont
                 loHistorialView.addSubview(poLabel!)
+            }else{
+                let lstHistorial = UserDefaults.standard.object(forKey: "lstHistorial") as! [String]
+                
+                var lsText:String = ""
+                for  i in 0 ..< lstHistorial.count{
+                    let lodetalle = lstHistorial[i] as! String
+                    lsText = lsText + " - \(lodetalle) \n"
+                }
+                
+                let poLabel = UITextView(frame: CGRect(x: 20.0,
+                                                       y: 80,
+                                                       width: loWidth,
+                                                       height: (0.74 * loHeigth) - (0.15 * loHeigth)))
+                poLabel.text = lsText
+                poLabel.textAlignment = NSTextAlignment.justified
+                poLabel.font = loFont2
+                loHistorialView.addSubview(poLabel)
+                
+                
             }
             
+            poBtnOk = UIButton(frame: CGRect(x: (0.1 * loWidth),
+                                             y: (0.74 * loHeigth),
+                                             width: (0.8 * loWidth),
+                                             height: (0.06 * loHeigth)))
+            poBtnOk?.setTitle("OK", for: .normal)
+            poBtnOk?.titleLabel?.font = loFont3
+            poBtnOk?.layer.borderWidth = CGFloat (0.6)
+            poBtnOk?.layer.borderColor = UIColor.darkGray.cgColor
+            poBtnOk?.backgroundColor = UIColor(red: 255/255, green: 0/255, blue: 152/255, alpha: 1)
+            poBtnOk?.addTarget(self, action:#selector(self.actionRemove), for: .touchUpInside)
+            poBtnOk?.layer.cornerRadius = 20.0
+            poBtnOk?.layer.masksToBounds = true
+            loHistorialView.addSubview(self.poBtnOk!)
         }
-        
-        
-        //boton registrar ---------------------------------
-        poBtnOk = UIButton(frame: CGRect(x: (0.1 * loWidth),
-                                               y: (0.74 * loHeigth),
-                                               width: (0.8 * loWidth),
-                                               height: (0.06 * loHeigth)))
-        poBtnOk?.setTitle("OK", for: .normal)
-        poBtnOk?.titleLabel?.font = loFont3
-        poBtnOk?.layer.borderWidth = CGFloat (0.6)
-        poBtnOk?.layer.borderColor = UIColor.darkGray.cgColor
-        poBtnOk?.backgroundColor = UIColor(red: 255/255, green: 0/255, blue: 152/255, alpha: 1)
-        poBtnOk?.addTarget(self, action:#selector(self.actionRemove), for: .touchUpInside)
-        poBtnOk?.layer.cornerRadius = 20.0
-        poBtnOk?.layer.masksToBounds = true
-        loHistorialView.addSubview(self.poBtnOk!)
-        
-        
     }
+    
     
     @objc func actionRemove(){
         if let viewWithTag = self.view.viewWithTag(100) {
@@ -266,7 +250,12 @@ class ClsHomeViewController: UIViewController, UITextFieldDelegate, UITableViewD
                 
                 
                 if UserDefaults.standard.object(forKey: "lstHistorial") != nil{
+                    
+                    
                     var lstHistorial = UserDefaults.standard.object(forKey: "lstHistorial") as! [String]
+                    
+                    lstHistorial = lstHistorial.filter{$0 != lsSearch}
+                    
                     lstHistorial.append(lsSearch)
                     UserDefaults.standard.set(lstHistorial, forKey: "lstHistorial")
                 }else{
@@ -282,17 +271,19 @@ class ClsHomeViewController: UIViewController, UITextFieldDelegate, UITableViewD
         textField.resignFirstResponder()
         return true
     }
-    
-        
         
         
         
         func makeGetCall() {
-            
+            self.paLstProductos.removeAll()
+            self.poTable.reloadData()
             let lsSearch = (poSearch?.text!.trimmingCharacters(in: .whitespaces))!
+           
+            
             // Set up the URL request
             let lsUrl = "https://www.liverpool.com.mx/tienda/?s=\(lsSearch)&d3106047a194921c01969dfdec083925=json"
-            let todoEndpoint: String = lsUrl
+             let loEncoded = lsUrl.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)
+            let todoEndpoint: String = loEncoded!
             guard let url = URL(string: todoEndpoint) else {
                 print("Error: cannot create URL")
                 return
@@ -302,7 +293,7 @@ class ClsHomeViewController: UIViewController, UITextFieldDelegate, UITableViewD
             // set up the session
             let config = URLSessionConfiguration.default
             let session = URLSession(configuration: config)
-            
+            show()
             // make the request
             let task = session.dataTask(with: urlRequest) {
                 (data, response, error) in
@@ -310,53 +301,84 @@ class ClsHomeViewController: UIViewController, UITextFieldDelegate, UITableViewD
                 guard error == nil else {
                     print("error calling GET on /todos/1")
                     print(error!)
+                    DispatchQueue.main.async {
+                        self.activityIndicator.stopAnimating()
+                        self.container.removeFromSuperview()
+                    }
                     return
                 }
                 // make sure we got data
                 guard let responseData = data else {
                     print("Error: did not receive data")
+                    DispatchQueue.main.async {
+                        self.activityIndicator.stopAnimating()
+                        self.container.removeFromSuperview()
+                    }
                     return
                 }
                 // parse the result as JSON, since that's what the API provides
                 do {
-                    guard let todo = try JSONSerialization.jsonObject(with: responseData, options: [])
+                    guard let loJsonAll = try JSONSerialization.jsonObject(with: responseData, options: [])
                         as? [String: Any] else {
                             print("error trying to convert data to JSON")
                             return
                     }
-                    
-                    
-                    let loContents = todo["contents"] as! NSArray
-                    let loDictionary1 = loContents[0] as! NSDictionary
-                    let loMainContent = loDictionary1["mainContent"] as! NSArray
-                    let loDictionary2 = loMainContent[1] as! NSDictionary
-                    let loContents2 = loDictionary2["contents"] as! NSArray
-                    
-                    if loContents2.count > 0 {
-                        let loDictionary3 = loContents2[0] as! NSDictionary
-                        let loRecords = loDictionary3["records"] as! NSArray
+                    if(loJsonAll["contents"] != nil){
                         
+                        let loContents = loJsonAll["contents"] as! NSArray
+                        let loDictionary1 = loContents[0] as! NSDictionary
+                        let loMainContent = loDictionary1["mainContent"] as! NSArray
                         
-                        for  i in 0 ..< loRecords.count{
-                            
-                            let loDictionary4 = loRecords[i] as! NSDictionary
-                            let loAttributes = loDictionary4["attributes"] as! NSDictionary
-                            let loNameArray = loAttributes["product.displayName"]! as! NSArray
-                            let loMarcaArray = loAttributes["product.brand"]! as! NSArray
-                            let loImagenArray = loAttributes["sku.thumbnailImage"]! as! NSArray
-                            let loPrecioArray = loAttributes["sortPrice"]! as! NSArray
-                            
-                            let loProducto = ClsProductoDTO()
-                            loProducto.psNombre = loNameArray[0] as! String
-                            loProducto.psMarca = loMarcaArray[0] as! String
-                            loProducto.psImagen = loImagenArray[0] as! String
-                            loProducto.psPrecio = loPrecioArray[0] as! String
-                            
-                            
-                            self.paLstProductos.append(loProducto)
+                        for  j in 0 ..< loMainContent.count{
+                            let loDictionary2 = loMainContent[j] as! NSDictionary
+                            if(loDictionary2["contents"] != nil){
+                                let loContents2 = loDictionary2["contents"] as! NSArray
+                                if loContents2.count > 0 {
+                                    let loDictionary3 = loContents2[0] as! NSDictionary
+                                    if(loDictionary3["records"] != nil){
+                                        
+                                        let loRecords = loDictionary3["records"] as! NSArray
+                                        
+                                        
+                                        for  i in 0 ..< loRecords.count{
+                                            
+                                            let loDictionary4 = loRecords[i] as! NSDictionary
+                                            if loDictionary4["attributes"]  != nil{
+                                                let loAttributes = loDictionary4["attributes"] as! NSDictionary
+                                                
+                                                let loProducto = ClsProductoDTO()
+                                                if(loAttributes["product.displayName"] != nil){
+                                                    let loNameArray = loAttributes["product.displayName"]! as! NSArray
+                                                    loProducto.psNombre = loNameArray[0] as! String
+                                                }
+                                                if loAttributes["product.brand"] != nil {
+                                                    let loMarcaArray = loAttributes["product.brand"]! as! NSArray
+                                                    loProducto.psMarca = loMarcaArray[0] as! String
+                                                }
+                                                if loAttributes["sku.thumbnailImage"] != nil{
+                                                    let loImagenArray = loAttributes["sku.thumbnailImage"]! as! NSArray
+                                                    loProducto.psImagen = loImagenArray[0] as! String
+                                                }
+                                                if loAttributes["sortPrice"] != nil {
+                                                    let loPrecioArray = loAttributes["sortPrice"]! as! NSArray
+                                                    loProducto.psPrecio = loPrecioArray[0] as! String
+                                                }
+                                                
+                                                self.paLstProductos.append(loProducto)
+                                            }
+                                        }
+                                        DispatchQueue.main.async {
+                                            self.activityIndicator.stopAnimating()
+                                            self.container.removeFromSuperview()
+                                        }
+                                    }
+                                }
+                            }
                         }
-                        
-                    } else {
+                    }
+                    
+                    
+                     if(self.paLstProductos.count == 0) {
                         let alert =  UIAlertController(title: "Mensaje",
                                                        message: "No se encontraron resultados",
                                                        preferredStyle: UIAlertControllerStyle.alert)
@@ -368,15 +390,20 @@ class ClsHomeViewController: UIViewController, UITextFieldDelegate, UITableViewD
                         self.present(alert, animated: true, completion: nil)
                     }
                     
-                    
-                    
-                    self.poTable.reloadData()
-                    
-                    
-                    
+                    DispatchQueue.main.async {
+                        self.activityIndicator.stopAnimating()
+                        self.container.removeFromSuperview()
+                        
+                        self.poTable.reloadData()
+                        
+                    }
                     
                 } catch  {
                     print("error trying to convert data to JSON")
+                    DispatchQueue.main.async {
+                        self.activityIndicator.stopAnimating()
+                        self.container.removeFromSuperview()
+                    }
                     return
                 }
             }
@@ -390,6 +417,39 @@ class ClsHomeViewController: UIViewController, UITextFieldDelegate, UITableViewD
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    func show() {
+        container.frame = self.view.frame
+        container.center = self.view.center
+        container.backgroundColor = UIColorFromHex(rgbValue: 0xffffff, alpha: 0.3)
+        
+        loadingView.frame = CGRect(x: 0, y: 0, width: 80, height: 80)
+        
+        
+        ()
+        loadingView.center = self.view.center
+        loadingView.backgroundColor = UIColorFromHex(rgbValue: 0x444444, alpha: 0.7)
+        loadingView.clipsToBounds = true
+        loadingView.layer.cornerRadius = 10
+        
+        activityIndicator.frame = CGRect(x: 0, y: 0, width: 40, height: 40)
+        activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.whiteLarge
+        activityIndicator.center = CGPoint(x: loadingView.frame.size.width / 2, y: loadingView.frame.size.height / 2)
+        
+        
+        
+        loadingView.addSubview(activityIndicator)
+        container.addSubview(loadingView)
+        self.view.addSubview(container)
+        activityIndicator.startAnimating()
+    }
+    func UIColorFromHex(rgbValue:UInt32, alpha:Double=1.0)->UIColor {
+        let red = CGFloat((rgbValue & 0xFF0000) >> 16)/256.0
+        let green = CGFloat((rgbValue & 0xFF00) >> 8)/256.0
+        let blue = CGFloat(rgbValue & 0xFF)/256.0
+        return UIColor(red:red, green:green, blue:blue, alpha:CGFloat(alpha))
+    }
+    
     
     
     

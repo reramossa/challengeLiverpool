@@ -175,6 +175,11 @@
                     </view>
                     <navigationItem key="navigationItem" id="Mxc-9F-PM2">
                         <barButtonItem key="leftBarButtonItem" title="Item" image="reveal-icon.png" id="tNl-Ij-9nT"/>
+                        <barButtonItem key="rightBarButtonItem" systemItem="search" id="LCl-BO-HCw">
+                            <connections>
+                                <action selector="actionHistorial:" destination="oSX-TY-cQV" id="AyX-ze-gW1"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="menuButton" destination="tNl-Ij-9nT" id="mil-0h-lRo"/>

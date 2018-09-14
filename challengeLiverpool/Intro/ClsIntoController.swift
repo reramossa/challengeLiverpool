@@ -20,7 +20,6 @@ class ClsIntoController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         imagenGif.loadGif(name: "spin")
     }
     
